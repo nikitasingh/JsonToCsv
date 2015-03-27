@@ -5,10 +5,10 @@ class DataController < ActionController::Base
 
   def create_csv
   	# file = File.read('files/avago.json')
-  	file = params["file"] || File.read('files/avago.json')
+  	file = params["file"] || File.read('files/data.json')
   	file = File.read(file.path) if params["file"]
   	data = JSON.parse(file)
-    CSV.open("public/avago.csv", "w") do |csv|
+    CSV.open("public/Data.csv", "w") do |csv|
       csv << ["Manufacturer Name", "Part number", "Part Description", "Distributor", "SKU", "Stock Quantity", "MOQ- Minimum Order Quantity", "Packaging", "Currency", "Price 1", "Price 10",  "Price 25", "Price 50", "Price 100", "Price 200", "Price 250", "Price 500", "Price 1000", "Price 2000", "Price 3000", "Price 4000", "Price 5000", "Price 10000", "Price 50000", "Price 100000" ] 
       data.each do |part|        
         part["offers"].each do |offer|
@@ -39,9 +39,9 @@ class DataController < ActionController::Base
                    price_hash[50000],
                    price_hash[100000]
                   ]              
-        end      
+        end if part["offers"]     
       end
     end 
-	  send_file "public/avago.csv" 
+	  send_file "public/Data.csv" 
   end
 end
