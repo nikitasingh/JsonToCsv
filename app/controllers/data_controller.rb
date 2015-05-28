@@ -8,8 +8,8 @@ class DataController < ActionController::Base
   	file = params["file"] || File.read('files/data.json')
   	file = File.read(file.path) if params["file"]
   	data = JSON.parse(file)
-    CSV.open("public/avago.csv", "w") do |csv|
-      csv << ["uid","mpn","sku", "offer:product_url", "offer:on_order_eta", 
+    CSV.open("public/texasinstruments.csv", "w") do |csv|
+      csv << ["uid","mpn","description","sku", "offer:product_url", "offer:on_order_eta", 
               "offer:last_updated", "offer:order_multiple", "offer:in_stock_quantity", 
               "offer:eligible_region", "offer:moq", "offer:on_order_quantity", "offer:octopart_rfq_url", 
               "offer:__class__", "offer:offer:seller:display_flag", "offer:seller:has_ecommerce", "offer:seller:uid", 
@@ -25,7 +25,12 @@ class DataController < ActionController::Base
           array = []  
           price_hash= offer["prices"].values.flatten.in_groups_of(2).to_h
             array << [ part['uid'], part['mpn'] ] if i == 0
-            array << ["", ""] unless i == 0
+            des = []
+            part['descriptions'].each do |d|
+              des << "(" + d["value"] + ")"
+            end
+            array << des.join("") if i == 0
+            array << ["", "", ""] unless i == 0
             array << [offer["sku"], 
                    offer["product_url"], 
                    offer["on_order_eta"], 
@@ -70,11 +75,12 @@ class DataController < ActionController::Base
                       part["manufacturer"]["uid"], part["manufacturer"]["homepage_url"], 
                       part["manufacturer"]["__class__"], 
                       part["manufacturer"]["name"]] if i == 0
+                      puts Time.now
             csv << array.flatten              
         end if part["offers"]     
       end
     end 
-	  send_file "public/avago.csv" 
+	  send_file "public/texasinstruments.csv" 
   end
 
   def old_create_csv
